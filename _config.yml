@@ -1,0 +1,11 @@
+remote_theme: "mmistakes/minimal-mistakes@4.24.0"
+title: My Text Editor Configurations
+author: Toma Brasoveanu
+exclude:
+  - _config.yml
+  - Gemfile
+  - LICENSE
+plugins:
+  - jekyll-responsive_image
+  - jekyll-include-cache
+  - emoji_for_jekyll

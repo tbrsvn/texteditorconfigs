@@ -1,0 +1,38 @@
+<head>
+    <link rel="stylesheet" href="prism.css">
+</head>
+<body class="line-numbers">
+    <pre><code class="language-toml" data-prismjs-copy="Copy">
+theme = "catppuccin_mocha"
+
+[editor]
+scroll-lines = 1
+cursorline = true
+auto-save = false
+completion-trigger-len = 1
+true-color = true
+color-modes = true
+auto-pairs = true
+rulers = [120]
+idle-timeout = 50
+
+[editor.cursor-shape]
+insert = "underline"
+normal = "block"
+select = "block"
+
+[editor.indent-guides]
+render = true
+character = "▏"
+
+[editor.lsp]
+display-messages = true
+display-inlay-hints = true
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name", "file-type", "total-line-numbers", "file-encoding"]
+center = []
+right = ["selections", "primary-selection-length", "position", "position-percentage", "spacer", "diagnostics", "workspace-diagnostics", "version-control"]
+    </code></pre>
+    <script src="prism.js"></script>
+</body>
