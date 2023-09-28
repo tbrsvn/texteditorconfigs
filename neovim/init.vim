@@ -44,7 +44,7 @@ set autoindent
 " Make Vim Act Normal In Windows
 set nocompatible
 " Turn On Syntax
-syntax on
+syntax enable
 let g:is_posix=1
 " Enable Autocompletion
 set wildmode=longest,list,full
@@ -78,12 +78,12 @@ set undofile
 " Grab Coc Settings
 if has('win64') || has('win32') || has('win16')
   if empty(glob('$LOCALAPPDATA\nvim\coc-settings.json'))
-    silent ! powershell -Command "
+    silent ! powershell -Command '
     \   New-Item -Path ~\AppData\Local\nvim -Name autoload -Type Directory -Force;
     \   Invoke-WebRequest
     \   -Uri 'https://raw.githubusercontent.com/norok-the-diablo/vimconfig/main/nvim/coc-settings.json'
     \   -OutFile ~\AppData\Local\nvim\coc-settings.json
-    \ "
+    \ '
   endif
 else
   if empty(glob('~/.config/nvim/coc-settings.json'))
@@ -94,12 +94,12 @@ endif
 " Install vim-plug if not found
 if has('win64') || has('win32') || has('win16')
   if empty(glob('$LOCALAPPDATA\nvim\autoload\plug.vim'))
-    silent ! powershell -Command "
+    silent ! powershell -Command '
     \   New-Item -Path ~\AppData\Local\nvim -Name autoload -Type Directory -Force;
     \   Invoke-WebRequest
     \   -Uri 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
     \   -OutFile ~\AppData\Local\nvim\autoload\plug.vim
-    \ "
+    \ '
   endif
 else
   if empty(glob('~/.config/nvim/autoload/plug.vim'))
@@ -126,6 +126,7 @@ call plug#begin()
   Plug 'mistweaverco/Screenshot.nvim'
   Plug 'yegappan/mru'
   Plug 'gbprod/stay-in-place.nvim'
+  Plug 'mbbill/undotree'
   Plug 'tpope/vim-surround'
   Plug 'Norok-The-Diablo/minesweeper.nvim'
   Plug 'tpope/vim-commentary'
@@ -139,6 +140,7 @@ call plug#begin()
   Plug 'nvim-tree/nvim-web-devicons'
   Plug 'nvim-lua/plenary.nvim'
   Plug 'archibate/lualine-time'
+  Plug 'ThePrimeagen/harpoon'
   Plug 'rmagatti/auto-session'
   Plug 'stevearc/dressing.nvim'
   Plug 'lukas-reineke/indent-blankline.nvim'
@@ -146,8 +148,8 @@ call plug#begin()
   Plug 'akinsho/bufferline.nvim'
   Plug 'catppuccin/nvim'
   Plug 'Norok-The-Diablo/alpha-nvim'
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'Norok-The-Diablo/telescope.nvim'
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
   Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
@@ -187,8 +189,8 @@ lua << EOF
 vim.g.firenvim_config = {
   localSettings = {
     ['.*'] = { takeover = 'never' },
-    ["https?://github\\.com/"] = { takeover = 'once' },
-    ["https?://gitlab\\.com/"] = { takeover = 'once' }
+    ['https?://github\\.com/'] = { takeover = 'once' },
+    ['https?://gitlab\\.com/'] = { takeover = 'once' }
   }
 }
 EOF
@@ -199,8 +201,6 @@ if exists('g:started_by_firenvim') && g:started_by_firenvim == 1
   let g:auto_session_enabled = v:false
 else
   set title
-  autocmd VimEnter * NERDTree | wincmd p
-  autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
   lua require'alpha'.setup(require'alpha.themes.dashboard'.config)
 endif
 " Rainbow Grouping Symbols
@@ -235,6 +235,7 @@ lua require('neoscroll').setup()
 lua require('killersheep').setup()
 lua require('Comment').setup()
 lua require('gitsigns').setup()
+lua require('telescope').load_extension('harpoon')
 lua require('colorizer').attach_to_buffer(0, { mode = 'background', css = true})
 lua require('auto-session').setup( {auto_restore_enabled = false } )
 let g:rainbow_active = 1
@@ -243,7 +244,7 @@ silent! let g:auto_save = 1
 " Clipboard
 lua << EOF
 require('deferred-clipboard').setup {
-  fallback = 'unnamedplus', -- or your preferred setting for clipboard
+  fallback = 'unnamedplus',
 }
 EOF
 " Code Runner
@@ -338,6 +339,11 @@ nnoremap <silent>    <C-t> :tabnew<CR>:NERDTreeToggle<CR>
 nnoremap <silent>    <C-w> <Cmd>:q<CR>
 nnoremap <silent>    <A-l> <Cmd>:tabnext<CR>
 nnoremap <silent>    <A-h> <Cmd>:tabprevious<CR>
+" Undo Tree
+nnoremap <leader>ut :UndotreeToggle<CR>
+" Harpoon
+nnoremap <leader>a :lua require('harpoon.mark').add_file() <CR>
+nnoremap <leader>h :lua require('harpoon.ui').toggle_quick_menu() <CR>
 " Knap And Markdown Preview
 if has('win64') || has('win32') || has('win16')
   nmap <F5> <Plug>MarkdownPreview
@@ -362,6 +368,7 @@ else
   nnoremap <silent> <F8> :lua require('knap').forward_jump()<CR>
 endif
 " Nerdtree
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 nnoremap <leader>n :NERDTreeFocus<CR>
 nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-e> :NERDTreeToggle<CR>
